@@ -20,18 +20,18 @@ func NewRedisCache(host string, password string, defaultExpiration time.Duration
 			// the redis protocol should probably be made sett-able
 			c, err := redis.Dial("tcp", host)
 			if err != nil {
-				return nil, err
+				panic(err)
 			}
 			if len(password) > 0 {
 				if _, err := c.Do("AUTH", password); err != nil {
 					c.Close()
-					return nil, err
+					panic(err)
 				}
 			} else {
 				// check with PING
 				if _, err := c.Do("PING"); err != nil {
 					c.Close()
-					return nil, err
+					panic(err)
 				}
 			}
 			return c, err
@@ -155,9 +155,7 @@ func (c *RedisStore) Flush() error {
 	return err
 }
 
-func (c *RedisStore) invoke(f func(string, ...interface{}) (interface{}, error),
-	key string, value interface{}, expires time.Duration) error {
-
+func (c *RedisStore) invoke(f func(string, ...interface{}) (interface{}, error), key string, value interface{}, expires time.Duration) error {
 	switch expires {
 	case DEFAULT:
 		expires = c.defaultExpiration
