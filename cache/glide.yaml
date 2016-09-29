@@ -1,0 +1,14 @@
+package: github.com/tevjef/contrib/cache
+import:
+- package: github.com/bradfitz/gomemcache
+  version: 72a68649ba712ee7c4b5b4a943a626bcd7d90eb8
+  subpackages:
+  - memcache
+- package: github.com/garyburd/redigo
+  version: 535138d7bcd717d6531c701ef5933d98b1866257
+  subpackages:
+  - redis
+- package: github.com/gin-gonic/gin
+  version: ac0ad2fed865d40a0adc1ac3ccaadc3acff5db4b
+- package: github.com/robfig/go-cache
+  version: 9fc39e0dbf62c034ec4e45e6120fc69433a3ec51

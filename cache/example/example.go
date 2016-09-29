@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/contrib/cache"
+	"github.com/tevjef/contrib/cache"
 	"github.com/gin-gonic/gin"
 	"time"
 )
