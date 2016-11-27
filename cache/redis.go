@@ -2,6 +2,7 @@ package cache
 
 import (
 	"github.com/garyburd/redigo/redis"
+	"log"
 	"time"
 )
 
@@ -12,27 +13,15 @@ type RedisStore struct {
 }
 
 // until redigo supports sharding/clustering, only one host will be in hostList
-func NewRedisCache(host string, password string, defaultExpiration time.Duration) *RedisStore {
+func NewRedisCache(host string, password string, database int, defaultExpiration time.Duration) *RedisStore {
 	var pool = &redis.Pool{
 		MaxIdle:     5,
 		IdleTimeout: 240 * time.Second,
 		Dial: func() (redis.Conn, error) {
 			// the redis protocol should probably be made sett-able
-			c, err := redis.Dial("tcp", host)
+			c, err := redis.Dial("tcp", host, redis.DialDatabase(database), redis.DialPassword(password))
 			if err != nil {
-				panic(err)
-			}
-			if len(password) > 0 {
-				if _, err := c.Do("AUTH", password); err != nil {
-					c.Close()
-					panic(err)
-				}
-			} else {
-				// check with PING
-				if _, err := c.Do("PING"); err != nil {
-					c.Close()
-					panic(err)
-				}
+				log.Printf("error connecting to redis %s", err.Error())
 			}
 			return c, err
 		},
