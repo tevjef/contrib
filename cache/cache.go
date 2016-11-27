@@ -130,6 +130,9 @@ func SiteCache(store CacheStore, expire time.Duration) gin.HandlerFunc {
 
 // Cache Decorator
 func CachePage(store CacheStore, expire time.Duration, handle gin.HandlerFunc) gin.HandlerFunc {
+	if expire == 0 {
+		 return handle
+	}
 
 	return func(c *gin.Context) {
 		var cache responseCache
