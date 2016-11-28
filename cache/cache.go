@@ -108,10 +108,12 @@ func Cache(store *CacheStore) gin.HandlerFunc {
 	}
 }
 
-func SiteCache(store CacheStore, expire time.Duration) gin.HandlerFunc {
+func SiteCache(expire time.Duration) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		var cache responseCache
+		store := cacheStoreFromContext(c)
+
 		url := c.Request.URL
 		key := urlEscape(PageCachePrefix, url.RequestURI())
 		if err := store.Get(key, &cache); err != nil {
@@ -129,13 +131,15 @@ func SiteCache(store CacheStore, expire time.Duration) gin.HandlerFunc {
 }
 
 // Cache Decorator
-func CachePage(store CacheStore, expire time.Duration, handle gin.HandlerFunc) gin.HandlerFunc {
+func CachePage(expire time.Duration, handle gin.HandlerFunc) gin.HandlerFunc {
 	if expire == 0 {
 		 return handle
 	}
 
 	return func(c *gin.Context) {
 		var cache responseCache
+		store := cacheStoreFromContext(c)
+
 		url := c.Request.URL
 		key := urlEscape(PageCachePrefix, url.RequestURI())
 		if err := store.Get(key, &cache); err != nil {
@@ -153,4 +157,8 @@ func CachePage(store CacheStore, expire time.Duration, handle gin.HandlerFunc) g
 			c.Writer.Write(cache.Data)
 		}
 	}
+}
+
+func cacheStoreFromContext(c *gin.Context) CacheStore {
+	return c.Value(CACHE_MIDDLEWARE_KEY).(CacheStore)
 }
